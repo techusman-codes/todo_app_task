@@ -10,6 +10,8 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  // controller
+  final _controller = TextEditingController();
   // create list of todod
   List todoList = [
     ['Make Tutorial', true],
@@ -23,13 +25,38 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
+  // create a new method for saveNewTask
+  void saveNewTask() {
+    setState(
+      () {
+        todoList.add(
+          [_controller.text, false],
+        );
+        _controller.clear();
+      },
+    );
+    Navigator.of(context).pop();
+  }
+
 // create a new task
   void createNewTask() {
     showDialog(
-        context: context,
-        builder: (context) {
-          return Dialogbox();
-        });
+      context: context,
+      builder: (context) {
+        return Dialogbox(
+          onSave: saveNewTask,
+          cancel: () => Navigator.of(context).pop(),
+          controller: _controller,
+        );
+      },
+    );
+  }
+
+  // delete task
+  void deleteTask(int index) {
+    setState(() {
+      todoList.removeAt(index);
+    });
   }
 
   @override
@@ -51,9 +78,11 @@ class _HomepageState extends State<Homepage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: createNewTask,
+        backgroundColor: Colors.deepPurple[200],
         child: Icon(
           Icons.add,
-          color: Colors.deepPurple,
+          size: 30,
+          color: Colors.white,
         ),
       ),
       body: ListView.builder(
@@ -65,6 +94,7 @@ class _HomepageState extends State<Homepage> {
             onChanged: (value) {
               checkBoxChange(value, index);
             },
+            deleteFunction: (context) => deleteTask,
           );
         },
       ),
